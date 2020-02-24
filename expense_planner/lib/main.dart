@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import './widgets/new_transaction.dart';
 import './models/transaction.dart';
 import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,9 +15,23 @@ class MyApp extends StatelessWidget {
       title: 'Personal Expenses',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.purple,
-        accentColor: Colors.indigo
-      ),
+          primarySwatch: Colors.purple,
+          accentColor: Colors.indigo,
+          fontFamily: 'Quicksand',
+          textTheme: ThemeData.light().textTheme.copyWith(
+                title: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'OpenSans',
+                ),
+                button: TextStyle(color: Colors.white)
+              ),
+          appBarTheme: AppBarTheme(
+            textTheme: ThemeData.light().textTheme.copyWith(
+                    title: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                )),
+          )),
       home: MyHomePage(),
     );
   }
@@ -30,30 +45,60 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _dummyTransactionList = [
+  final List<Transaction> _dummyTransactionList = [    
     Transaction(
       id: 't1',
       title: 'New Shoes',
-      amount: 199.00,
+      amount: 69.99,
       date: DateTime.now(),
     ),
     Transaction(
       id: 't2',
-      title: 'Groceries',
-      amount: 89.99,
+      title: 'Weekly Groceries',
+      amount: 16.53,
+      date: DateTime.now(),
+    ),Transaction(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 69.99,
       date: DateTime.now(),
     ),
-  ];
+    Transaction(
+      id: 't2',
+      title: 'Weekly Groceries',
+      amount: 16.53,
+      date: DateTime.now(),
+    ),Transaction(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 69.99,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Weekly Groceries',
+      amount: 16.53,
+      date: DateTime.now(),
+    ),
+    ];
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+    
+
+  void _addNewTransaction(String txTitle, double txAmount, DateTime choosenDate) {
     final newTrs = Transaction(
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
+      date: choosenDate,
       id: DateTime.now().toString(),
     );
     setState(() {
       _dummyTransactionList.add(newTrs);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _dummyTransactionList.removeWhere((tx) => tx.id == id);
     });
   }
 
@@ -70,6 +115,16 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  List<Transaction> get _recentTransaction {
+    return _dummyTransactionList.where((tx) {
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7),
+        ),
+      );
+    }).toList();
   }
 
   @override
@@ -91,21 +146,11 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: double.infinity,
-              margin: EdgeInsets.all(0),
-              padding: EdgeInsets.all(0),
-              // child: Card(
-              //   color: Colors.blueGrey,
-              //   child: Text(
-              //     'Show1Ï',
-              //     textAlign: TextAlign.center,
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //     ),
-              //   ),
-              // ),
-            ),
-            TransactionList(_dummyTransactionList),
+                width: double.infinity,
+                margin: EdgeInsets.all(0),
+                padding: EdgeInsets.all(0),
+                child: Chart(_recentTransaction)),
+            TransactionList(_dummyTransactionList, _deleteTransaction),
           ],
         ),
       ),
