@@ -10,7 +10,7 @@ class Chart extends StatelessWidget {
   Chart(this.recentTransaction);
 
   List<Map<String, Object>> get groupTrxWeek {
-    return List.generate(7, (index) {
+    return List.generate(8, (index) {
       final weekDay = DateTime.now().subtract(
         Duration(days: index),
       );

@@ -5,7 +5,7 @@ import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> _dummyTransactionList;
-  bool listOrother = true;
+  final bool listOrother = true;
   final Function deleteElement;
 
   TransactionList(this._dummyTransactionList, this.deleteElement);
@@ -13,28 +13,29 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600,
       child: _dummyTransactionList.isEmpty
-          ? Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 30,
-                ),
-                Text('No Transaction has been add yet!'),
-                SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Container(
-                      height: 300,
-                      padding: EdgeInsets.all(20),
-                      child: Image.asset(
-                        'assets/images/waiting.png',
-                        fit: BoxFit.fill,
-                      )),
-                ),
-              ],
-            )
+          ? LayoutBuilder(builder: (ctx, contraints) {
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Text('No Transaction has been add yet!'),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: Container(
+                        height: contraints.maxHeight * .6,
+                        padding: EdgeInsets.all(20),
+                        child: Image.asset(
+                          'assets/images/waiting.png',
+                          fit: BoxFit.fill,
+                        )),
+                  ),
+                ],
+              );
+            })
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 return listOrother == true
@@ -63,13 +64,24 @@ class TransactionList extends StatelessWidget {
                             DateFormat.yMMMd()
                                 .format(_dummyTransactionList[index].date),
                           ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            color: Colors.red,
-                            onPressed: () {
-                              deleteElement(_dummyTransactionList[index].id);
-                            },
-                          ),
+                          trailing: MediaQuery.of(context).size.width > 600
+                              ? FlatButton.icon(
+                                  onPressed: () {
+                                    deleteElement(
+                                        _dummyTransactionList[index].id);
+                                  },
+                                  textColor: Colors.red,
+                                  icon: Icon(Icons.delete),
+                                  label: Text('Delete'),
+                                )
+                              : IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    deleteElement(
+                                        _dummyTransactionList[index].id);
+                                  },
+                                ),
                         ),
                       )
                     : Card(
